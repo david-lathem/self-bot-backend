@@ -16,13 +16,13 @@ const { NODE_ENV, ALLOWED_ORIGINS, BASE_URL } = process.env;
 if (NODE_ENV === "development") app.use(morgan("dev"));
 
 // setting cors, cross site requests can then access our api by allowing origin and setting creds true we can receive and set cookies
-// const corsOptions = {
-//   origin: ALLOWED_ORIGINS.split(","),
-//   credentials: true,
-// };
+const corsOptions = {
+  origin: ALLOWED_ORIGINS.split(","),
+  // credentials: true,
+};
 
-// app.use(cors(corsOptions));
-// app.options("*", cors());
+app.use(cors(corsOptions));
+app.options("*", cors());
 
 // returns a function acting as middleware to parse application/json bodies
 app.use(express.json());
