@@ -1,3 +1,5 @@
+import botClient from "../discord/botClient.js";
+import userClient from "../discord/userClient.js";
 import Config from "../models/Config.js";
 import AppError from "../utils/appError.js";
 import { sendResponse } from "../utils/sendResponse.js";
@@ -17,6 +19,25 @@ export const setConfig = async (req, res) => {
 
   if (!["bot", "user"].includes(tokenType))
     throw new AppError('tokenType must be either "bot" or "user"', 400);
+
+  if (botClient.isReady()) await botClient.destroy();
+  if (userClient.isReady()) await userClient.logout();
+
+  let err;
+
+  if (tokenType === "bot") err = await botClient.login(token).catch((e) => e);
+
+  if (tokenType === "user") err = await userClient.login(token).catch((e) => e);
+
+  if (err?.code === "TOKEN_INVALID" || err?.code === "TokenInvalid")
+    throw new AppError("Invalid token", 400);
+
+  // if err other than token invalid
+  if (err) {
+    console.error(err);
+
+    throw new AppError("Something went wrong", 500);
+  }
 
   const existing = await Config.findOne();
 
