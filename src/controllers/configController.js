@@ -29,13 +29,13 @@ export const setConfig = async (req, res) => {
 
   if (tokenType === "user") err = await userClient.login(token).catch((e) => e);
 
-  if (err?.code === "TOKEN_INVALID" || err?.code === "TokenInvalid")
-    throw new AppError("Invalid token", 400);
+  if (err instanceof Error) {
+    if (err.code === "TOKEN_INVALID" || err.code === "TokenInvalid")
+      throw new AppError("Invalid token", 400);
 
-  // if err other than token invalid
-  if (err) {
     console.error(err);
 
+    // if err other than token invalid
     throw new AppError("Something went wrong", 500);
   }
 
