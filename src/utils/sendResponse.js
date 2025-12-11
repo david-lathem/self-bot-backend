@@ -1,4 +1,4 @@
-exports.sendResponse = (req, res, fieldName, data) => {
+export const sendResponse = (req, res, fieldName, data) => {
   const {
     discordUser,
     query: { fields },

@@ -1,14 +1,9 @@
-require("dotenv").config();
-const mongoose = require("mongoose");
-
-const app = require("./app.js");
+import mongoose from "mongoose";
+import app from "./app.js";
 
 const { PORT = 3000, MONGO_URI } = process.env;
 
-mongoose
-  .connect(MONGO_URI)
-  .then(() => console.log("Connected to database"))
-  .catch(console.log);
+mongoose.connect(MONGO_URI).then(() => console.log("Connected to database"));
 
 const server = app.listen(PORT, () => {
   console.log(`Server is running at port http://localhost:${PORT}`);
