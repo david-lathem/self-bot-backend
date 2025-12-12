@@ -8,7 +8,7 @@ export const getMe = (req, res) => {
     username: user.username,
     globalName: user.globalName,
     bot: user.bot,
-    avatarURL: user.avatarURL,
+    avatarURL: user.avatarURL(),
     defaultAvatarURL: user.defaultAvatarURL,
   };
 
