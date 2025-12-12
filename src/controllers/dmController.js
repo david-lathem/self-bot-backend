@@ -14,7 +14,7 @@ export const getDms = async (req, res) => {
     id: d.id,
     type: d.type,
     name: d.name || d.recipient?.globalName || d.recipient?.username, // name only in case of group dm, for deleted username global name is null
-    avatar: d.recipient?.avatar, // recipient in case of dm
+    avatar: d.recipient?.avatarURL(), // recipient in case of dm
   }));
 
   sendResponse(req, res, dms);
