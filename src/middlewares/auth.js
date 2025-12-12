@@ -16,5 +16,11 @@ export const checkLogin = async (req, res, next) => {
 
   req.type = config.tokenType;
 
+  let client = botClient;
+
+  if (config.tokenType === "user") client = userClient;
+
+  req.client = client;
+
   next();
 };
