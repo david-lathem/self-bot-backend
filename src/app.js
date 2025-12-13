@@ -39,6 +39,7 @@ app.use(checkLogin);
 app.use(`${BASE_URL}/users`, userRouter);
 app.use(`${BASE_URL}/servers`, serverRouter);
 app.use(`${BASE_URL}/dms`, dmRouter);
+app.use(`${BASE_URL}/backup`, dmRouter);
 
 // can use app.all(*) as well but .use() makes more sense since .all works for a specific route say /test but use would work with /test/23 as well
 // synchronouse code, if throws error, will be sent to error middleware. A promise returning fuunction that rejects promise also forwards error

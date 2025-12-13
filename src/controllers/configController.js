@@ -2,29 +2,35 @@ import botClient from "../discord/botClient.js";
 import userClient from "../discord/userClient.js";
 import Config from "../models/Config.js";
 import AppError from "../utils/appError.js";
+import { isCorrectBotType } from "../utils/checkers.js";
+import { botType, botTypeArray } from "../utils/constants.js";
 import { sendResponse } from "../utils/sendResponse.js";
 
 export const getConfig = async (req, res) => {
-  const config = await Config.findOne();
-  if (!config) throw new AppError("Config not found", 404);
+  const configs = await Config.find({});
 
-  sendResponse(req, res, config);
+  sendResponse(req, res, configs);
 };
 
 export const setConfig = async (req, res) => {
-  const { token, tokenType } = req.body;
+  const { token } = req.body;
+  const { tokenType } = req.query;
 
   if (!token || !tokenType)
-    throw new AppError("Token and tokenType (bot | user) are required", 400);
+    throw new AppError(
+      `Token (in body) and tokenType (in query param) (${botType.NORMAL_BOT} | ${botType.SELF_BOT}) are required`,
+      400
+    );
 
-  if (!["bot", "user"].includes(tokenType))
-    throw new AppError('tokenType must be either "bot" or "user"', 400);
+  isCorrectBotType(req);
 
   let err;
 
-  if (tokenType === "bot") err = await botClient.login(token).catch((e) => e);
+  if (tokenType === botType.NORMAL_BOT)
+    err = await botClient.login(token).catch((e) => e);
 
-  if (tokenType === "user") err = await userClient.login(token).catch((e) => e);
+  if (tokenType === botType.SELF_BOT)
+    err = await userClient.login(token).catch((e) => e);
 
   if (err instanceof Error) {
     if (
@@ -43,7 +49,7 @@ export const setConfig = async (req, res) => {
   const existing = await Config.findOne();
 
   const config = await Config.findOneAndUpdate(
-    {},
+    { tokenType },
     { token, tokenType },
     { new: true, upsert: true, runValidators: true }
   );

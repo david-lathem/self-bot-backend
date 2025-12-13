@@ -1,8 +1,9 @@
 import express from "express";
 import { getDms } from "../controllers/dmController.js";
+import { dmOnly } from "../middlewares/dm.js";
 
 const dmRouter = express.Router();
 
-dmRouter.get("/", getDms);
+dmRouter.get("/", dmOnly, getDms);
 
 export default dmRouter;

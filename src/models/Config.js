@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { botTypeArray } from "../utils/constants.js";
 
 const configSchema = new mongoose.Schema({
   token: {
@@ -7,7 +8,7 @@ const configSchema = new mongoose.Schema({
   },
   tokenType: {
     type: String,
-    enum: ["bot", "user"],
+    enum: botTypeArray,
     required: true,
   },
 });

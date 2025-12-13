@@ -1,8 +1,6 @@
 import { sendResponse } from "../utils/sendResponse.js";
 
 export const getDms = async (req, res) => {
-  if (req.type === "bot") throw new Error("No DMs with bot, use user bot", 400);
-
   const dmsCollection = req.client.channels.cache
     .filter((c) => c.type === "DM" || c.type === "GROUP_DM")
     .filter((c) => {
