@@ -17,6 +17,7 @@ export const startBackup = async (req, item) => {
     const backupId = `${itemType}-${item.id}`;
 
     const processData = {
+      processId,
       status: processStatus.Active,
       tokenType,
       itemName,
