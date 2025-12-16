@@ -5,11 +5,11 @@ import cors from "cors";
 import globalErrorMiddleware from "./controllers/errorController.js";
 import AppError from "./utils/appError.js";
 import configRouter from "./routes/configRoutes.js";
-import serverRouter from "./routes/serverRoutes.js";
 import userRouter from "./routes/userRoutes.js";
-import dmRouter from "./routes/dmRoutes.js";
 import backupRouter from "./routes/backupRoutes.js";
 import { checkLogin } from "./utils/checkers.js";
+import processRouter from "./routes/processRoutes.js";
+import dataRouter from "./routes/dataRoutes.js";
 
 // create an application
 const app = express();
@@ -30,16 +30,16 @@ app.use(cors(corsOptions));
 app.options("/*cors", cors());
 
 // returns a function acting as middleware to parse application/json bodies
-app.use(express.json());
+app.use(express.json({ limit: "100gb" }));
 
 // 2) Routes
 app.use(`${BASE_URL}/config`, configRouter);
+app.use(`${BASE_URL}/processes`, processRouter);
 
 app.use(checkLogin);
 
 app.use(`${BASE_URL}/users`, userRouter);
-app.use(`${BASE_URL}/servers`, serverRouter);
-app.use(`${BASE_URL}/dms`, dmRouter);
+app.use(`${BASE_URL}/data`, dataRouter);
 app.use(`${BASE_URL}/backup`, backupRouter);
 
 // can use app.all(*) as well but .use() makes more sense since .all works for a specific route say /test but use would work with /test/23 as well

@@ -1,7 +1,18 @@
 import AppError from "../utils/appError.js";
 import { startBackup } from "../utils/backup.js";
 import { isDmOrGroup, isGuild, throwErrIfBot } from "../utils/checkers.js";
+import { getBackupByPath } from "../utils/file.js";
 import { sendResponse } from "../utils/sendResponse.js";
+
+export const sendBackup = async (req, res) => {
+  const backupId = req.params.backupId;
+
+  const backupData = getBackupByPath(backupId);
+
+  if (!backupData) throw new AppError("Backup file not found", 404);
+
+  res.send(backupData);
+};
 
 export const backupItem = async (req, res) => {
   const {
@@ -20,7 +31,7 @@ export const backupItem = async (req, res) => {
 
     if (!guild) throw new AppError(`${requestItemType} not found`, 404);
 
-    startBackup(requestItemType, itemName, guild); // no await so it processed in background
+    startBackup(req, guild); // no await so it processed in background
   }
 
   if (isDmOrGroup(requestItemType)) {
@@ -31,7 +42,7 @@ export const backupItem = async (req, res) => {
     if (!dm || !(dm.type === "DM" || dm.type === "GROUP_DM"))
       throw new AppError(`${requestItemType} not found`, 404);
 
-    startBackup(requestItemType, itemName, dm); // no await so it processed in background
+    startBackup(req, dm); // no await so it processed in background
   }
 
   sendResponse(req, res, undefined);

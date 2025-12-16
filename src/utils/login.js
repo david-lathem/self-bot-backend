@@ -1,7 +1,7 @@
-import Config from "../../models/Config.js";
-import { botType } from "../../utils/constants.js";
-import botClient from "../botClient.js";
-import userClient from "../userClient.js";
+import botClient from "../discord/botClient.js";
+import userClient from "../discord/userClient.js";
+import Config from "../models/Config.js";
+import { botType } from "./constants.js";
 
 export const loginBotsOnStartup = async () => {
   const normalBotconfig = await Config.findOne({

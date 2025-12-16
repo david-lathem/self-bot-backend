@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import app from "./app.js";
-import { loginBotsOnStartup } from "./discord/utils/login.js";
+import { loginBotsOnStartup } from "./utils/login.js";
 
 const { PORT = 3000, MONGO_URI } = process.env;
 

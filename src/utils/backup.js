@@ -1,32 +1,68 @@
+import ProcessController from "../structures/ProcessController.js";
 import { isDmOrGroup, isGuild } from "./checkers.js";
+import { processStatus } from "./constants.js";
+import { generateUniqueId } from "./crypto.js";
 import {
   ensureAttachmentsDirectoryExists,
   saveAttachment,
   saveBackup,
 } from "./file.js";
 
-export const startBackup = async (itemType, itemName, item) => {
-  const backupId = `${itemType}-${item.id}`;
+export const startBackup = async (req, item) => {
+  const processId = generateUniqueId();
+  try {
+    const { itemName, itemType, iconURL } = req.body;
+    const { tokenType } = req.query;
 
-  let remainingProps = {};
+    const backupId = `${itemType}-${item.id}`;
 
-  if (isGuild(itemType)) remainingProps = await backupGuild(item);
+    const processData = {
+      status: processStatus.Active,
+      tokenType,
+      itemName,
+      itemType,
+      iconURL,
+    };
 
-  if (isDmOrGroup(itemType)) remainingProps = await backupDm(item);
+    ProcessController.setProcess(processId, processData);
 
-  const backupData = {
-    id: item.id,
-    type: item.type,
-    name: itemName,
-    ...remainingProps,
-  };
+    let remainingProps = {};
 
-  await saveBackup(backupId, backupData);
+    if (isGuild(itemType)) remainingProps = await backupGuild(item);
+
+    if (isDmOrGroup(itemType)) remainingProps = await backupDm(item);
+
+    const backupData = {
+      id: item.id,
+      type: item.type || "guild", // since guild dont have type
+      name: itemName,
+      ...remainingProps,
+    };
+
+    await saveBackup(backupId, backupData);
+
+    ProcessController.setProcess(processId, {
+      ...processData,
+      status: processStatus.Completed,
+    });
+  } catch (error) {
+    console.error(error);
+
+    const process = ProcessController.getProcess(processId);
+
+    if (!process) return;
+
+    ProcessController.setProcess(processId, {
+      ...process,
+      status: processStatus.Errored,
+      errorMsg: error.message,
+    });
+  }
 };
 
 async function backupGuild(guild) {
   let guildBackup = {
-    icon: guild.iconURL(),
+    iconURL: guild.iconURL(),
     memberCount: guild.memberCount,
     verificationLevel: guild.verificationLevel,
     defaultMessageNotifications: guild.defaultMessageNotifications,
