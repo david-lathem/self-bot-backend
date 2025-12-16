@@ -1,8 +1,9 @@
 import express from "express";
-import { dmOnly } from "../middlewares/dm.js";
+import { checkItemType } from "../utils/checkers.js";
+import { backupItem } from "../controllers/backupController.js";
 
 const backupRouter = express.Router();
 
-backupRouter.get("/dms/:channelId", dmOnly, getServers);
+backupRouter.post("/:itemId", checkItemType, backupItem);
 
 export default backupRouter;

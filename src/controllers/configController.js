@@ -3,7 +3,7 @@ import userClient from "../discord/userClient.js";
 import Config from "../models/Config.js";
 import AppError from "../utils/appError.js";
 import { isCorrectBotType } from "../utils/checkers.js";
-import { botType, botTypeArray } from "../utils/constants.js";
+import { botType } from "../utils/constants.js";
 import { sendResponse } from "../utils/sendResponse.js";
 
 export const getConfig = async (req, res) => {

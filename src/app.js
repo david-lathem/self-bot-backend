@@ -6,9 +6,10 @@ import globalErrorMiddleware from "./controllers/errorController.js";
 import AppError from "./utils/appError.js";
 import configRouter from "./routes/configRoutes.js";
 import serverRouter from "./routes/serverRoutes.js";
-import { checkLogin } from "./middlewares/auth.js";
 import userRouter from "./routes/userRoutes.js";
 import dmRouter from "./routes/dmRoutes.js";
+import backupRouter from "./routes/backupRoutes.js";
+import { checkLogin } from "./utils/checkers.js";
 
 // create an application
 const app = express();
@@ -39,7 +40,7 @@ app.use(checkLogin);
 app.use(`${BASE_URL}/users`, userRouter);
 app.use(`${BASE_URL}/servers`, serverRouter);
 app.use(`${BASE_URL}/dms`, dmRouter);
-app.use(`${BASE_URL}/backup`, dmRouter);
+app.use(`${BASE_URL}/backup`, backupRouter);
 
 // can use app.all(*) as well but .use() makes more sense since .all works for a specific route say /test but use would work with /test/23 as well
 // synchronouse code, if throws error, will be sent to error middleware. A promise returning fuunction that rejects promise also forwards error

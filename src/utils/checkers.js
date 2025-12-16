@@ -1,10 +1,66 @@
-import AppError from "./appError.js";
-import { botType, botTypeArray } from "./constants.js";
+import botClient from "../discord/botClient.js";
+import userClient from "../discord/userClient.js";
+import Config from "../models/Config.js";
+import AppError from "../utils/appError.js";
+import { botType, botTypeArray, itemType, itemTypeArray } from "./constants.js";
+
+export const checkLogin = async (req, res, next) => {
+  isCorrectBotType(req);
+
+  const config = await Config.findOne({ tokenType: req.query.tokenType });
+
+  if (!config) throw new AppError("You have not set a token yet", 400);
+
+  if (config.tokenType === botType.NORMAL_BOT && !botClient.isReady())
+    throw new AppError("Bot not logged in, please re-login", 400);
+
+  if (config.tokenType === botType.SELF_BOT && !userClient.isReady())
+    throw new AppError("User bot not logged in, please re-login", 400);
+
+  req.type = config.tokenType;
+
+  let client = botClient;
+
+  if (config.tokenType === botType.SELF_BOT) client = userClient;
+
+  req.client = client;
+
+  next();
+};
+
+export const checkItemType = (req, res, next) => {
+  if (itemTypeArray.includes(req.query.itemType)) return next();
+
+  throw new AppError(
+    `itemType (in query params) must be one of the: ${itemTypeArray.join(
+      ", "
+    )}`,
+    400
+  );
+};
 
 export const isCorrectBotType = (req) => {
-  if (!botTypeArray.includes(req.query.tokenType))
-    throw new AppError(
-      `tokenType (in query params) must be either "${botType.NORMAL_BOT}" or "${botType.SELF_BOT}"`,
-      400
-    );
+  if (botTypeArray.includes(req.query.tokenType)) return;
+
+  throw new AppError(
+    `tokenType (in query params) must be one of the: ${botTypeArray.join(
+      ", "
+    )}`,
+    400
+  );
 };
+
+export const dmOnly = async (req, res, next) => {
+  throwErrIfBot(req);
+  next();
+};
+
+export const throwErrIfBot = (req) => {
+  if (req.type === botType.NORMAL_BOT)
+    throw new AppError("No DMs with bot, use user bot", 400);
+};
+
+export const isDmOrGroup = (type) =>
+  type === itemType.DM || type === itemType.GROUP_DM;
+
+export const isGuild = (type) => type === itemType.GUILD;

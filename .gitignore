@@ -1,3 +1,7 @@
 .env
 node_modules
 *lock.json
+backups/*
+!backups/.gitkeep
+attachments/*
+!attachments/.gitkeep
