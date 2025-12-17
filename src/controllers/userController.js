@@ -1,8 +1,9 @@
+import ClientHandler from "../structures/ClientHandler.js";
 import ProcessController from "../structures/ProcessController.js";
 import { sendResponse } from "../utils/sendResponse.js";
 
 export const getMe = (req, res) => {
-  const { user } = req.client;
+  const { user } = ClientHandler.getClient(req);
 
   const data = {
     id: user.id,

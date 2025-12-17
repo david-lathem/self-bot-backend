@@ -1,7 +1,7 @@
-import { Client } from "discord.js-selfbot-v13";
+// import { Client } from "discord.js-selfbot-v13";
 
-const userClient = new Client();
+// const userClient = new Client();
 
-userClient.type = "user";
+// userClient.type = "user";
 
-export default userClient;
+// export default userClient;

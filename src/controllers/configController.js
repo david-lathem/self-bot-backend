@@ -1,6 +1,5 @@
-import botClient from "../discord/botClient.js";
-import userClient from "../discord/userClient.js";
 import Config from "../models/Config.js";
+import ClientHandler from "../structures/ClientHandler.js";
 import AppError from "../utils/appError.js";
 import { isCorrectBotType } from "../utils/checkers.js";
 import { botType } from "../utils/constants.js";
@@ -26,11 +25,14 @@ export const setConfig = async (req, res) => {
 
   let err;
 
-  if (tokenType === botType.NORMAL_BOT)
-    err = await botClient.login(token).catch((e) => e);
+  if (tokenType === botType.NORMAL_BOT) {
+    err = await ClientHandler.loginBot(token).catch((e) => e);
+  }
 
-  if (tokenType === botType.SELF_BOT)
-    err = await userClient.login(token).catch((e) => e);
+  if (tokenType === botType.SELF_BOT) {
+    err = await ClientHandler.loginSelf(token).catch((e) => e);
+    console.log(err);
+  }
 
   if (err instanceof Error) {
     if (

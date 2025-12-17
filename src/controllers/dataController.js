@@ -1,3 +1,4 @@
+import ClientHandler from "../structures/ClientHandler.js";
 import { itemType } from "../utils/constants.js";
 import { getAllBackups } from "../utils/file.js";
 import { sendResponse } from "../utils/sendResponse.js";
@@ -6,18 +7,20 @@ import { sendResponse } from "../utils/sendResponse.js";
 export const getAllData = async (req, res) => {
   const backups = getAllBackups();
 
-  const guilds = [...req.client.guilds.cache.values()].map((s) => ({
-    name: s.name,
-    id: s.id,
-    iconURL: s.iconURL(),
-    isLeft: false,
-  }));
+  const guilds = [...ClientHandler.getClient(req).guilds.cache.values()].map(
+    (s) => ({
+      name: s.name,
+      id: s.id,
+      iconURL: s.iconURL(),
+      isLeft: false,
+    })
+  );
 
-  const dmCollection = req.client.channels.cache
-    .filter((c) => c.type === "DM")
+  const dmCollection = ClientHandler.getClient(req)
+    .channels.cache.filter((c) => c.type === "DM")
     .filter((c) => !c.recipient.bot);
 
-  const groupDmCollection = req.client.channels.cache.filter(
+  const groupDmCollection = ClientHandler.getClient(req).channels.cache.filter(
     (c) => c.type === "GROUP_DM"
   );
 
